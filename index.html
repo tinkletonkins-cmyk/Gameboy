@@ -371,8 +371,8 @@ function drawPokemon(){
 const TW=10,TH=16;
 let tetBoard,tetPiece,tetNext,tetScore,tetLines,tetLevel,tetOver,tetTimer,tetDropI;
 const TETS=[{shape:[[1,1,1,1]],color:'#00d4ff'},{shape:[[1,1],[1,1]],color:'#f8d800'},{shape:[[0,1,0],[1,1,1]],color:'#a000c0'},{shape:[[1,0,0],[1,1,1]],color:'#f0a000'},{shape:[[0,0,1],[1,1,1]],color:'#0050f0'},{shape:[[0,1,1],[1,1,0]],color:'#20c020'},{shape:[[1,1,0],[0,1,1]],color:'#e03030'}];
-function initTetris(){tetBoard=Array.from({length:TH},()=>Array(TW).fill(0));tetScore=0;tetLines=0;tetLevel=1;tetOver=false;tetTimer=0;tetDropI=28;tetNext={...TETS[Math.floor(Math.random()*TETS.length)]};spawnTet();}
-function spawnTet(){tetPiece={...tetNext,x:3,y:0};tetNext={...TETS[Math.floor(Math.random()*TETS.length)]};if(tCol(tetPiece,0,0))tetOver=true;}
+function initTetris(){tetBoard=Array.from({length:TH},()=>Array(TW).fill(0));tetScore=0;tetLines=0;tetLevel=1;tetOver=false;tetTimer=0;tetDropI=28;const t=TETS[Math.floor(Math.random()*TETS.length)];tetNext={shape:t.shape.map(r=>[...r]),color:t.color};spawnTet();}
+function spawnTet(){tetPiece={shape:tetNext.shape.map(r=>[...r]),color:tetNext.color,x:3,y:0};const t=TETS[Math.floor(Math.random()*TETS.length)];tetNext={shape:t.shape.map(r=>[...r]),color:t.color};if(tCol(tetPiece,0,0))tetOver=true;}
 function tCol(p,dx,dy,rot){const sh=rot||p.shape;for(let r=0;r<sh.length;r++)for(let c=0;c<sh[r].length;c++)if(sh[r][c]){const nx=p.x+c+dx,ny=p.y+r+dy;if(nx<0||nx>=TW||ny>=TH)return true;if(ny>=0&&tetBoard[ny][nx])return true;}return false;}
 function tRot(m){return m[0].map((_,i)=>m.map(r=>r[i]).reverse());}
 function tLock(){tetPiece.shape.forEach((row,r)=>row.forEach((v,c)=>{if(v&&tetPiece.y+r>=0)tetBoard[tetPiece.y+r][tetPiece.x+c]=tetPiece.color;}));let cl=0;for(let r=TH-1;r>=0;r--){if(tetBoard[r].every(c=>c)){tetBoard.splice(r,1);tetBoard.unshift(Array(TW).fill(0));cl++;r++;}}if(cl){tetLines+=cl;tetScore+=cl*100*tetLevel;if(tetLines%5===0){tetLevel++;tetDropI=Math.max(5,tetDropI-4);}}spawnTet();}
@@ -485,7 +485,7 @@ function updateFlappy(){
   fl.pipes=fl.pipes.filter(p=>p.x>-20);
   fl.pipes.forEach(p=>{if(!p.scored&&p.x<14){p.scored=true;fl.score++;}});
   if(fl.y<0||fl.y>128){fl.over=true;fl.best=Math.max(fl.best,fl.score);return;}
-  for(const p of fl.pipes){if(14>p.x&&14<p.x+16){if(fl.y<p.gap||fl.y+10>p.gap+46){fl.over=true;fl.best=Math.max(fl.best,fl.score);return;}}}
+  for(const p of fl.pipes){if(14>p.x&&14<p.x+16){if(fl.y<p.gap||fl.y+10>p.gap+52){fl.over=true;fl.best=Math.max(fl.best,fl.score);return;}}}
 }
 function drawFlappyBird(bx,by,vy){
   const tilt=Math.max(-0.5,Math.min(0.8,vy*0.1));
@@ -519,7 +519,7 @@ function drawFlappy(){
     const px=Math.floor(p.x);
     fr(px,0,16,p.gap,'#73bf2e');fr(px+2,0,3,p.gap,'#8fd946');fr(px+15,0,1,p.gap,'#5a9922');
     fr(px-2,p.gap-7,20,7,'#73bf2e');fr(px-2,p.gap-7,3,7,'#8fd946');fr(px+17,p.gap-7,1,7,'#5a9922');
-    const bot=p.gap+48;
+    const bot=p.gap+52;
     fr(px-2,bot,20,7,'#73bf2e');fr(px-2,bot,3,7,'#8fd946');fr(px+17,bot,1,7,'#5a9922');
     fr(px,bot+7,16,144-bot-7,'#73bf2e');fr(px+2,bot+7,3,144-bot-7,'#8fd946');fr(px+15,bot+7,1,144-bot-7,'#5a9922');
   });
@@ -553,7 +553,7 @@ function updateSpace(){
     if(b.player){
       for(const a of sp.aliens){if(!a.alive)continue;if(b.x>a.x&&b.x<a.x+10&&b.y>a.y&&b.y<a.y+8){a.alive=false;sp.score+=(4-a.row)*10+10;return false;}}
       if(sp.ufo&&b.x>sp.ufo.x&&b.x<sp.ufo.x+14&&b.y<sp.ufo.y+6){sp.score+=100;sp.ufo=null;return false;}
-      for(const sh of sp.shields){if(sh.hp>0&&b.x>sh.x&&b.x<sh.x+14&&b.y>108&&b.y<116){sh.hp--;return false;}}
+      for(const sh of sp.shields){if(sh.hp>0&&b.x>sh.x&&b.x<sh.x+14&&b.y>108&&b.y<116&&b.dy<0){sh.hp--;return false;}}
     } else {
       if(b.x>sp.px&&b.x<sp.px+10&&b.y>120&&b.y<130){sp.lives--;if(sp.lives<=0)sp.over=true;sp.px=75;return false;}
       for(const sh of sp.shields){if(sh.hp>0&&b.x>sh.x&&b.x<sh.x+14&&b.y>108&&b.y<116){sh.hp=Math.max(0,sh.hp-2);return false;}}
@@ -623,7 +623,7 @@ function updateBreakout(){
     if(br.ball.x>=bk.x&&br.ball.x<=bk.x+13&&br.ball.y>=bk.y&&br.ball.y<=bk.y+6){
       bk.alive=false;br.score+=bk.pts;
       br.ball.dy*=-1;
-      if(br.bricks.every(b=>!b.alive)){br.win=true;}
+      if(br.bricks.every(b=>!b.alive)){br.level++;br.win=true;}
       break;
     }
   }
@@ -672,18 +672,18 @@ let pm={};
 function initPacman(){
   pm={
     maze:PM_MAZE_SRC.map(r=>[...r]),
-    px:9,py:14,
-    pdir:{x:0,y:0},pnext:{x:1,y:0},
-    pMoveAcc:0,pMoveSpeed:0.1,
+    px:9,py:16,
+    pdir:{x:0,y:0},
+    pMoveAcc:0,pMoveSpeed:0.15,
     mouth:0,mouthDir:1,
     score:0,lives:3,over:false,win:false,
     dots:0,power:0,
     eatScore:0,eatTimer:0,
     ghosts:[
-      {tx:9, ty:9, dx:1, dy:0,color:'#ff0000',scared:false,eaten:false,moveTimer:0,speed:28},
-      {tx:10,ty:9, dx:-1,dy:0,color:'#ffb8de',scared:false,eaten:false,moveTimer:0,speed:32},
-      {tx:9, ty:10,dx:0, dy:1,color:'#00ffff',scared:false,eaten:false,moveTimer:0,speed:36},
-      {tx:10,ty:10,dx:0, dy:-1,color:'#ffb852',scared:false,eaten:false,moveTimer:0,speed:40},
+      {tx:9, ty:9, dx:1, dy:0,color:'#ff0000',scared:false,eaten:false,moveTimer:0,speed:8},
+      {tx:10,ty:9, dx:-1,dy:0,color:'#ffb8de',scared:false,eaten:false,moveTimer:0,speed:10},
+      {tx:9, ty:10,dx:0, dy:1,color:'#00ffff',scared:false,eaten:false,moveTimer:0,speed:12},
+      {tx:10,ty:10,dx:0, dy:-1,color:'#ffb852',scared:false,eaten:false,moveTimer:0,speed:14},
     ],
   };
   pm.dots=PM_MAZE_SRC.flat().filter(c=>c===2||c===3).length;
@@ -693,58 +693,80 @@ function updatePacman(){
   if(pop('Enter')){paused=!paused;return;}
   if(paused){if(cfm())paused=false;else if(pop('b')){paused=false;screen='launcher';}return;}
   if(pm.over||pm.win){if(cfm())initPacman();else if(pop('b'))screen='launcher';return;}
-  if(pop('ArrowUp'))pm.pnext={x:0,y:-1};
-  if(pop('ArrowDown'))pm.pnext={x:0,y:1};
-  if(pop('ArrowLeft'))pm.pnext={x:-1,y:0};
-  if(pop('ArrowRight'))pm.pnext={x:1,y:0};
+  // Direct movement: hold a key = move that way
+  let wantX=0,wantY=0;
+  if(keys['ArrowUp']){wantX=0;wantY=-1;}
+  else if(keys['ArrowDown']){wantX=0;wantY=1;}
+  else if(keys['ArrowLeft']){wantX=-1;wantY=0;}
+  else if(keys['ArrowRight']){wantX=1;wantY=0;}
+  
   pm.mouth+=pm.mouthDir*0.16;
   if(pm.mouth>=0.42||pm.mouth<=0)pm.mouthDir*=-1;
-  // Smooth tile-based movement
-  const alignX=Math.abs(pm.px-Math.round(pm.px))<0.12;
-  const alignY=Math.abs(pm.py-Math.round(pm.py))<0.12;
-  if(alignX&&alignY){
-    pm.px=Math.round(pm.px);pm.py=Math.round(pm.py);
-    const ntx=pm.px+pm.pnext.x,nty=pm.py+pm.pnext.y;
-    if(pmCanMove(ntx,nty)){pm.pdir={...pm.pnext};}
-    const mx=pm.px+pm.pdir.x,my=pm.py+pm.pdir.y;
-    if(pmCanMove(mx,my)){pm.px+=pm.pdir.x*pm.pMoveSpeed;pm.py+=pm.pdir.y*pm.pMoveSpeed;}
+  
+  // Tile-based movement
+  const snapX=Math.round(pm.px),snapY=Math.round(pm.py);
+  const atCenter=Math.abs(pm.px-snapX)<0.08&&Math.abs(pm.py-snapY)<0.08;
+  
+  if(atCenter){
+    pm.px=snapX;pm.py=snapY;
+    // Try desired direction
+    if((wantX!==0||wantY!==0)&&pmCanMove(snapX+wantX,snapY+wantY)){
+      pm.pdir={x:wantX,y:wantY};
+    }
+    // Move if direction is valid
+    if(pmCanMove(snapX+pm.pdir.x,snapY+pm.pdir.y)){
+      pm.px+=pm.pdir.x*pm.pMoveSpeed;
+      pm.py+=pm.pdir.y*pm.pMoveSpeed;
+    } else {
+      pm.pdir={x:0,y:0};
+    }
   } else {
-    pm.px+=pm.pdir.x*pm.pMoveSpeed;pm.py+=pm.pdir.y*pm.pMoveSpeed;
+    // Between tiles: keep moving
+    pm.px+=pm.pdir.x*pm.pMoveSpeed;
+    pm.py+=pm.pdir.y*pm.pMoveSpeed;
   }
   if(pm.px<0)pm.px=PM_W-1;if(pm.px>=PM_W)pm.px=0;
-  const tx=Math.round(pm.px),ty=Math.round(pm.py);
-  if(tx>=0&&tx<PM_W&&ty>=0&&ty<PM_H){
-    if(pm.maze[ty][tx]===2){pm.maze[ty][tx]=0;pm.score+=10;pm.dots--;}
-    else if(pm.maze[ty][tx]===3){pm.maze[ty][tx]=0;pm.score+=50;pm.dots--;pm.power=180;pm.ghosts.forEach(g=>{if(!g.eaten)g.scared=true;});}
+  const curTx=Math.round(pm.px),curTy=Math.round(pm.py);
+  if(curTx>=0&&curTx<PM_W&&curTy>=0&&curTy<PM_H){
+    if(pm.maze[curTy][curTx]===2){pm.maze[curTy][curTx]=0;pm.score+=10;pm.dots--;}
+    else if(pm.maze[curTy][curTx]===3){pm.maze[curTy][curTx]=0;pm.score+=50;pm.dots--;pm.power=180;pm.ghosts.forEach(g=>{if(!g.eaten)g.scared=true;});}
     if(pm.dots<=0)pm.win=true;
   }
   if(pm.power>0){pm.power--;if(pm.power===0)pm.ghosts.forEach(g=>{g.scared=false;});}
   pm.ghosts.forEach(g=>{
     if(g.eaten){
-      g.moveTimer++;if(g.moveTimer<8)return;g.moveTimer=0;
-      const htx=9,hty=9;
-      if(Math.abs(g.tx-htx)<=1&&Math.abs(g.ty-hty)<=1){g.eaten=false;g.scared=false;return;}
-      const dirs=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
-      const best=dirs.filter(d=>pmCanMove(g.tx+d.x,g.ty+d.y)).sort((a,b)=>(Math.abs(g.tx+a.x-htx)+Math.abs(g.ty+a.y-hty))-(Math.abs(g.tx+b.x-htx)+Math.abs(g.ty+b.y-hty)))[0];
-      if(best){g.tx+=best.x;g.ty+=best.y;g.dx=best.x;g.dy=best.y;}
-      return;
+      g.moveTimer++;if(g.moveTimer>=8){
+        g.moveTimer=0;
+        const htx=9,hty=9;
+        if(Math.abs(g.tx-htx)<=1&&Math.abs(g.ty-hty)<=1){g.eaten=false;g.scared=false;}
+        else{
+          const dirs=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
+          const best=dirs.filter(d=>pmCanMove(g.tx+d.x,g.ty+d.y)).sort((a,b)=>(Math.abs(g.tx+a.x-htx)+Math.abs(g.ty+a.y-hty))-(Math.abs(g.tx+b.x-htx)+Math.abs(g.ty+b.y-hty)))[0];
+          if(best){g.tx+=best.x;g.ty+=best.y;g.dx=best.x;g.dy=best.y;}
+        }
+      }
+    } else {
+      g.moveTimer++;
+      const spd=g.scared?g.speed*2:g.speed;
+      if(g.moveTimer>=spd){
+        g.moveTimer=0;
+        const dirs=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
+        const valid=dirs.filter(d=>pmCanMove(g.tx+d.x,g.ty+d.y)&&!(d.x===-g.dx&&d.y===-g.dy));
+        const pool=valid.length>0?valid:dirs.filter(d=>pmCanMove(g.tx+d.x,g.ty+d.y));
+        if(pool.length){
+          let gTx=Math.round(pm.px),gTy=Math.round(pm.py);
+          if(g.tx>=8&&g.tx<=11&&g.ty>=8&&g.ty<=10){gTx=9;gTy=7;}
+          let chosen;
+          if(g.scared||Math.random()<0.15){chosen=pool[Math.floor(Math.random()*pool.length)];}
+          else{chosen=pool.sort((a,b)=>(Math.abs(g.tx+a.x-gTx)+Math.abs(g.ty+a.y-gTy))-(Math.abs(g.tx+b.x-gTx)+Math.abs(g.ty+b.y-gTy)))[0];}
+          g.tx+=chosen.x;g.ty+=chosen.y;g.dx=chosen.x;g.dy=chosen.y;
+        }
+      }
     }
-    g.moveTimer++;
-    const spd=g.scared?g.speed*2:g.speed;
-    if(g.moveTimer<spd)return;
-    g.moveTimer=0;
-    const dirs=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
-    const valid=dirs.filter(d=>pmCanMove(g.tx+d.x,g.ty+d.y)&&!(d.x===-g.dx&&d.y===-g.dy));
-    const pool=valid.length>0?valid:dirs.filter(d=>pmCanMove(g.tx+d.x,g.ty+d.y));
-    if(!pool.length)return;
-    let chosen;
-    if(g.scared){chosen=pool[Math.floor(Math.random()*pool.length)];}
-    else{chosen=pool.sort((a,b)=>(Math.abs(g.tx+a.x-Math.round(pm.px))+Math.abs(g.ty+a.y-Math.round(pm.py)))-(Math.abs(g.tx+b.x-Math.round(pm.px))+Math.abs(g.ty+b.y-Math.round(pm.py))))[0];}
-    g.tx+=chosen.x;g.ty+=chosen.y;g.dx=chosen.x;g.dy=chosen.y;
-    // Collision - use tile proximity
-    if(Math.abs(g.tx-Math.round(pm.px))<=0&&Math.abs(g.ty-Math.round(pm.py))<=0){
+    // Collision - check every frame, moving or not
+    if(Math.abs(g.tx-Math.round(pm.px))===0&&Math.abs(g.ty-Math.round(pm.py))===0){
       if(g.scared&&!g.eaten){g.eaten=true;g.scared=false;pm.score+=200;pm.eatScore=200;pm.eatTimer=50;}
-      else if(!g.eaten){pm.lives--;if(pm.lives<=0)pm.over=true;else{pm.px=9;pm.py=14;pm.pdir={x:0,y:0};pm.pnext={x:1,y:0};}}
+      else if(!g.eaten&&!pm.over){pm.lives--;if(pm.lives<=0)pm.over=true;else{pm.px=9;pm.py=16;pm.pdir={x:0,y:0};}}
     }
   });
 }
@@ -820,21 +842,31 @@ function updatePong(){
   // player1 controls (arrows/WS)
   if(keys['ArrowUp']||keys['w'])pg.p1y=Math.max(0,pg.p1y-2.5);
   if(keys['ArrowDown']||keys['s'])pg.p1y=Math.min(124,pg.p1y+2.5);
-  // AI player2 - smooth lerp toward ball
-  const target=Math.max(0,Math.min(124,pg.ball.y-10));
-  pg.p2y+=(target-pg.p2y)*0.08;
+  // AI player2 - predict where ball will be and move smoothly
+  let aiTarget=pg.ball.y-10;
+  if(pg.ball.dx>0){
+    const framesUntilArrival=Math.max(1,(148-pg.ball.x)/Math.abs(pg.ball.dx));
+    aiTarget=pg.ball.y+pg.ball.dy*framesUntilArrival*0.6-10;
+  }
+  aiTarget=Math.max(0,Math.min(124,aiTarget));
+  // Move at a fixed max speed instead of lerp for smooth motion
+  const aiDiff=aiTarget-pg.p2y;
+  const aiMaxSpeed=1.8;
+  if(Math.abs(aiDiff)>1){
+    pg.p2y+=Math.sign(aiDiff)*Math.min(aiMaxSpeed,Math.abs(aiDiff));
+  }
   pg.p2y=Math.max(0,Math.min(124,pg.p2y));
   pg.ball.x+=pg.ball.dx;pg.ball.y+=pg.ball.dy;
   if(pg.ball.y<=5||pg.ball.y>=138){pg.ball.dy*=-1;}
   // p1 paddle (left)
   if(pg.ball.x<=10&&pg.ball.y>=pg.p1y&&pg.ball.y<=pg.p1y+20){
-    pg.ball.dx=Math.abs(pg.ball.dx)+0.1;
+    pg.ball.dx=Math.min(4,Math.abs(pg.ball.dx)+0.1);
     pg.ball.dy=3*((pg.ball.y-pg.p1y)/20-0.5);
     pg.ball.x=11;
   }
   // p2 paddle (right)
   if(pg.ball.x>=148&&pg.ball.y>=pg.p2y&&pg.ball.y<=pg.p2y+20){
-    pg.ball.dx=-(Math.abs(pg.ball.dx)+0.1);
+    pg.ball.dx=-Math.min(4,Math.abs(pg.ball.dx)+0.1);
     pg.ball.dy=3*((pg.ball.y-pg.p2y)/20-0.5);
     pg.ball.x=147;
   }

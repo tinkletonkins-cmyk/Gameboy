@@ -587,7 +587,6 @@ function updateSpace(){
     if(b.player){
       for(const a of sp.aliens){if(!a.alive)continue;if(b.x>a.x&&b.x<a.x+10&&b.y>a.y&&b.y<a.y+8){a.alive=false;sp.score+=(4-a.row)*10+10;sfxBounce();return false;}}
       if(sp.ufo&&b.x>sp.ufo.x&&b.x<sp.ufo.x+14&&b.y<sp.ufo.y+6){sp.score+=100;sp.ufo=null;return false;}
-      for(const sh of sp.shields){if(sh.hp>0&&b.x>sh.x&&b.x<sh.x+14&&b.y>108&&b.y<116&&b.dy<0){sh.hp--;return false;}}
     } else {
       if(b.x>sp.px&&b.x<sp.px+10&&b.y>120&&b.y<130){sp.lives--;sfxDie();if(sp.lives<=0)sp.over=true;sp.px=75;return false;}
       for(const sh of sp.shields){if(sh.hp>0&&b.x>sh.x&&b.x<sh.x+14&&b.y>108&&b.y<116){sh.hp=Math.max(0,sh.hp-2);return false;}}
@@ -642,7 +641,8 @@ function updateBreakout(){
   if(keys['ArrowRight']||keys['d'])br.px=Math.min(160-br.bw,br.px+2.5);
   if(!br.started){if(cfm()||pop(' ')){br.started=true;}return;}
   br.ball.x+=br.ball.dx;br.ball.y+=br.ball.dy;
-  if(br.ball.x<=3||br.ball.x>=157){br.ball.dx*=-1;}
+  if(br.ball.x<=3){br.ball.x=3;br.ball.dx=Math.abs(br.ball.dx);}
+  else if(br.ball.x>=157){br.ball.x=157;br.ball.dx=-Math.abs(br.ball.dx);}
   if(br.ball.y<=10){br.ball.dy*=-1;}
   if(br.ball.y>=140){br.lives--;sfxDie();if(br.lives<=0){br.over=true;return;}br.ball={x:80,y:100,dx:1.4+(br.level*0.2),dy:-2-(br.level*0.1)};br.started=false;return;}
   // paddle

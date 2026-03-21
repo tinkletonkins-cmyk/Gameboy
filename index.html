@@ -10,33 +10,33 @@
   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:#12121f;background-image:radial-gradient(ellipse at 30% 40%,rgba(30,10,60,.7) 0%,transparent 55%),radial-gradient(ellipse at 75% 70%,rgba(10,30,50,.5) 0%,transparent 50%);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-family:'Press Start 2P',monospace;padding:40px 20px;overflow-y:auto;}
-  .gameboy{width:420px;background:var(--gb-color,#d0d0dc);border-radius:22px 22px 90px 22px;padding:28px 28px 44px;box-shadow:5px 5px 0 #a0a0b0,10px 10px 0 #707080,0 30px 80px rgba(0,0,0,.8),inset 0 2px 0 rgba(255,255,255,.85),inset -3px -3px 10px rgba(0,0,0,.12);position:relative;transition:background .3s;}
-  .screen-bezel{background:#1e1e2e;border-radius:12px 12px 6px 6px;padding:16px 16px 22px;box-shadow:inset 0 4px 12px rgba(0,0,0,.7),inset 0 0 0 3px #14141e;margin-bottom:20px;position:relative;}
-  .screen-bezel::after{content:'● ●';position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:7px;color:#44445a;letter-spacing:6px;}
-  .screen-label{text-align:center;font-size:7px;color:#55556a;letter-spacing:3px;margin-bottom:10px;}
-  #gameCanvas{display:block;width:340px;height:306px;image-rendering:pixelated;image-rendering:crisp-edges;margin:0 auto;border:3px solid #0a0a12;}
-  .controls{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
-  .dpad{width:90px;height:90px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;}
-  .dpad-btn{background:#4a4a5a;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:#6a6a7a;user-select:none;box-shadow:0 3px 0 #2a2a3a;transition:transform .05s,box-shadow .05s;}
-  .dpad-btn:active,.dpad-btn.pressed{transform:translateY(2px);box-shadow:0 1px 0 #2a2a3a;background:#3a3a4a;}
+  .gameboy{width:400px;background:var(--gb-color,#d0d0dc);border-radius:20px 20px 84px 20px;padding:26px 26px 60px;box-shadow:4px 4px 0 #a0a0b0,9px 9px 0 #707080,0 28px 76px rgba(0,0,0,.8),inset 0 2px 0 rgba(255,255,255,.85),inset -3px -3px 10px rgba(0,0,0,.12);position:relative;transition:background .3s;}
+  .screen-bezel{background:#1e1e2e;border-radius:11px 11px 5px 5px;padding:15px 15px 20px;box-shadow:inset 0 4px 11px rgba(0,0,0,.7),inset 0 0 0 2px #14141e;margin-bottom:18px;position:relative;}
+  .screen-bezel::after{content:'● ●';position:absolute;bottom:5px;left:50%;transform:translateX(-50%);font-size:6px;color:#44445a;letter-spacing:5px;}
+  .screen-label{text-align:center;font-size:6px;color:#55556a;letter-spacing:2px;margin-bottom:9px;}
+  #gameCanvas{display:block;width:320px;height:288px;image-rendering:pixelated;image-rendering:crisp-edges;margin:0 auto;border:2px solid #0a0a12;}
+  .controls{display:flex;align-items:center;justify-content:space-between;margin-top:5px;}
+  .dpad{width:85px;height:85px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;}
+  .dpad-btn{background:#4a4a5a;border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:#6a6a7a;user-select:none;box-shadow:0 2px 0 #2a2a3a;transition:transform .05s,box-shadow .05s;}
+  .dpad-btn:active,.dpad-btn.pressed{transform:translateY(1px);box-shadow:0 1px 0 #2a2a3a;background:#3a3a4a;}
   .dpad-center{background:#3a3a4a;cursor:default;}.dpad-empty{background:transparent;box-shadow:none;cursor:default;}
-  .ab-buttons{display:flex;gap:10px;align-items:flex-end;margin-bottom:6px;}
-  .btn-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,.92);cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.45);user-select:none;transition:transform .05s,box-shadow .05s;}
-  .btn-circle:active,.btn-circle.pressed{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.45);filter:brightness(1.3);}
+  .ab-buttons{display:flex;gap:9px;align-items:flex-end;margin-bottom:5px;}
+  .btn-circle{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.92);cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.45);user-select:none;transition:transform .05s,box-shadow .05s;}
+  .btn-circle:active,.btn-circle.pressed{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.45);filter:brightness(1.3);}
   .btn-a{background:#cc2244;}.btn-b{background:#882266;}
-  .start-select{display:flex;gap:12px;justify-content:center;margin-top:14px;}
-  .btn-small{background:#888898;border-radius:10px;width:44px;height:12px;display:flex;align-items:center;justify-content:center;font-size:5px;color:#3a3a4a;cursor:pointer;box-shadow:0 3px 0 #5a5a6a;letter-spacing:1px;user-select:none;}
-  .btn-small:active,.btn-small.pressed{transform:translateY(2px);box-shadow:0 1px 0 #5a5a6a;filter:brightness(1.2);}
-  .speaker{display:flex;flex-direction:column;gap:5px;margin-top:6px;align-self:flex-end;margin-bottom:8px;}
-  .speaker-row{display:flex;gap:5px;}
-  .speaker-dot{width:5px;height:5px;border-radius:50%;background:#b0b0c0;box-shadow:inset 0 1px 0 rgba(0,0,0,.3);}
-  .color-picker{display:flex;gap:8px;align-items:center;justify-content:center;}
-  .color-swatch{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid rgba(0,0,0,0.3);transition:transform .15s,border .15s;}
+  .start-select{display:flex;gap:11px;justify-content:center;margin-top:12px;}
+  .btn-small{background:#888898;border-radius:9px;width:42px;height:11px;display:flex;align-items:center;justify-content:center;font-size:4px;color:#3a3a4a;cursor:pointer;box-shadow:0 2px 0 #5a5a6a;letter-spacing:1px;user-select:none;}
+  .btn-small:active,.btn-small.pressed{transform:translateY(1px);box-shadow:0 1px 0 #5a5a6a;filter:brightness(1.2);}
+  .speaker{display:flex;flex-direction:column;gap:4px;margin-top:5px;align-self:flex-end;margin-bottom:7px;}
+  .speaker-row{display:flex;gap:4px;}
+  .speaker-dot{width:4px;height:4px;border-radius:50%;background:#b0b0c0;box-shadow:inset 0 1px 0 rgba(0,0,0,.3);}
+  .color-picker{display:flex;gap:7px;align-items:center;justify-content:center;}
+  .color-swatch{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid rgba(0,0,0,0.3);transition:transform .15s,border .15s;}
   .color-swatch:hover{transform:scale(1.2);}
   .color-swatch.active{border:3px solid #fff;transform:scale(1.15);}
-  .color-label{font-family:'Press Start 2P',monospace;font-size:5px;color:#555;letter-spacing:1px;}
+  .color-label{font-family:'Press Start 2P',monospace;font-size:4px;color:#555;letter-spacing:1px;}
   /* Power button */
-  .power-btn{width:14px;height:14px;border-radius:50%;background:#cc2244;border:2px solid #881122;cursor:pointer;position:absolute;right:20px;top:14px;box-shadow:0 2px 0 #660011;transition:transform .1s;}
+  .power-btn{width:13px;height:13px;border-radius:50%;background:#cc2244;border:2px solid #881122;cursor:pointer;position:absolute;right:18px;top:12px;box-shadow:0 2px 0 #660011;transition:transform .1s;}
   .power-btn:active{transform:scale(0.9);}
 
   /* ── SKIN SYSTEM ── */
@@ -112,6 +112,13 @@
   <div class="color-swatch" style="background:#f8d0c8;" onclick="setGBColor('#f8d0c8','#e0a090',this)" title="Red"></div>
   <div class="color-swatch" style="background:#f8f0c0;" onclick="setGBColor('#f8f0c0','#e0d080',this)" title="Yellow"></div>
   <div class="color-swatch" style="background:#1a1a1a;border-color:#555;" onclick="setGBColor('#1a1a1a','#000',this)" title="Black"></div>
+  <div class="color-swatch" style="background:#ff6b9d;" onclick="setGBColor('#ff6b9d','#c44569',this)" title="Pink"></div>
+  <div class="color-swatch" style="background:#f8b500;" onclick="setGBColor('#f8b500','#d4940e',this)" title="Orange"></div>
+  <div class="color-swatch" style="background:#38ada9;" onclick="setGBColor('#38ada9','#2c8a85',this)" title="Teal"></div>
+  <div class="color-swatch" style="background:#786fa6;" onclick="setGBColor('#786fa6','#5f4b8b',this)" title="Lavender"></div>
+  <div class="color-swatch" style="background:#00ff88;" onclick="setGBColor('#00ff88','#00cc6a',this)" title="Neon Green"></div>
+  <div class="color-swatch" style="background:#ff00ff;" onclick="setGBColor('#ff00ff','#cc00cc',this)" title="Neon Pink"></div>
+  <div class="color-swatch" style="background:#ffffff;border-color:#ccc;" onclick="setGBColor('#ffffff','#e0e0e0',this)" title="White"></div>
   <div id="muteBtn" class="color-swatch" style="background:#333;border-color:#555;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="soundEnabled=!soundEnabled;this.textContent=soundEnabled?'🔊':'🔇';" title="Toggle Sound">🔊</div>
 </div>
 

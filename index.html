@@ -64,6 +64,7 @@
     body{padding:15px 20px;justify-content:flex-start;gap:8px;}
     .collapsible{max-height:300px;}
   }
+  body.no-scroll{overflow:hidden;}
 </style>
 </head>
 <body>
@@ -141,6 +142,8 @@ function togglePanels() {
   _panelsOpen = !_panelsOpen;
   document.getElementById('colPanels').classList.toggle('collapsed', !_panelsOpen);
   document.getElementById('toggleLabel').textContent = _panelsOpen ? '▲ HIDE' : '▼ SHOW';
+  document.getElementById('toggleRow').style.display = _panelsOpen ? 'flex' : 'none';
+  document.body.classList.toggle('no-scroll', !_panelsOpen);
 }
 
 // ═══ CORE ═══

@@ -463,6 +463,22 @@
       background: linear-gradient(90deg, transparent, #2a2a3e, transparent);
     }
 
+    .toggle-chevron {
+      display: inline-block;
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-bottom: 5px solid currentColor;
+      margin-right: 6px;
+      vertical-align: middle;
+      transition: transform .3s ease;
+    }
+
+    .toggle-chevron.collapsed {
+      transform: rotate(180deg);
+    }
+
     .collapsible {
       overflow: hidden;
       transition: max-height .4s cubic-bezier(.4, 0, .2, 1), opacity .35s;
@@ -508,7 +524,6 @@
     }
 
     @media (max-height: 550px) {
-      .collapsible.collapsed + .toggle-row,
       .toggle-row {
         position: fixed;
         bottom: 8px;
@@ -520,10 +535,6 @@
         backdrop-filter: blur(8px);
         z-index: 100;
       }
-    }
-
-    body.no-scroll {
-      overflow: hidden;
     }
 
     /* Touch feedback for mobile */
@@ -603,12 +614,6 @@
     </div>
   </div>
 
-  <div class="toggle-row" onclick="togglePanels()" id="toggleRow">
-    <div class="toggle-line"></div>
-    <span class="toggle-label" id="toggleLabel">HIDE OPTIONS</span>
-    <div class="toggle-line"></div>
-  </div>
-
   <div class="collapsible" id="colPanels">
     <div class="color-picker">
       <span class="color-label">SHELL COLOR</span>
@@ -651,14 +656,21 @@
       <div class="skin-row" id="skinTray"></div>
     </div>
   </div><!-- /colPanels -->
+
+  <div class="toggle-row" onclick="togglePanels()" id="toggleRow">
+    <div class="toggle-line"></div>
+    <span class="toggle-label" id="toggleLabel"><span class="toggle-chevron"></span>HIDE OPTIONS</span>
+    <div class="toggle-line"></div>
+  </div>
   <script>
     // ── Toggle panels ──
     let _panelsOpen = true;
     function togglePanels() {
       _panelsOpen = !_panelsOpen;
       document.getElementById('colPanels').classList.toggle('collapsed', !_panelsOpen);
-      document.getElementById('toggleLabel').textContent = _panelsOpen ? 'HIDE OPTIONS' : 'SHOW OPTIONS';
-      document.body.classList.toggle('no-scroll', !_panelsOpen);
+      document.getElementById('toggleLabel').innerHTML = _panelsOpen 
+        ? '<span class="toggle-chevron"></span>HIDE OPTIONS' 
+        : '<span class="toggle-chevron collapsed"></span>SHOW OPTIONS';
     }
 
     // ═══ CORE ═══

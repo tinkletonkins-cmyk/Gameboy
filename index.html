@@ -3,9 +3,11 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <meta name="theme-color" content="#12121f">
   <title>Game Boy</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -27,28 +29,33 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
+      justify-content: flex-start;
+      gap: 16px;
       font-family: 'Press Start 2P', monospace;
-      padding: 40px 20px;
+      padding: 24px 16px;
+      padding-top: max(24px, env(safe-area-inset-top));
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
       overflow-y: auto;
       overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .gameboy {
-      width: 400px;
+      width: min(400px, calc(100vw - 32px));
+      max-width: 400px;
       background: var(--gb-color, #d0d0dc);
       border-radius: 20px 20px 84px 20px;
-      padding: 26px 26px 60px;
+      padding: clamp(18px, 5vw, 26px) clamp(18px, 5vw, 26px) clamp(40px, 10vw, 60px);
       box-shadow: 4px 4px 0 transparent, 9px 9px 0 transparent, 0 28px 76px rgba(0, 0, 0, .8), inset 0 2px 0 rgba(255, 255, 255, .85), inset -3px -3px 10px rgba(0, 0, 0, .12);
       position: relative;
       transition: background .3s, box-shadow .3s;
+      flex-shrink: 0;
     }
 
     .screen-bezel {
       background: #1e1e2e;
       border-radius: 11px 11px 5px 5px;
-      padding: 15px 15px 20px;
+      padding: clamp(10px, 3vw, 15px) clamp(10px, 3vw, 15px) clamp(14px, 4vw, 20px);
       box-shadow: inset 0 4px 11px rgba(0, 0, 0, .7), inset 0 0 0 2px #14141e;
       margin-bottom: 18px;
       position: relative;
@@ -67,20 +74,23 @@
 
     .screen-label {
       text-align: center;
-      font-size: 6px;
-      color: #55556a;
+      font-size: clamp(5px, 1.5vw, 6px);
+      color: #6a6a80;
       letter-spacing: 2px;
       margin-bottom: 9px;
+      text-transform: uppercase;
     }
 
     #gameCanvas {
       display: block;
-      width: 320px;
-      height: 288px;
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 160 / 144;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       margin: 0 auto;
       border: 2px solid #0a0a12;
+      border-radius: 2px;
     }
 
     .controls {
@@ -91,8 +101,8 @@
     }
 
     .dpad {
-      width: 85px;
-      height: 85px;
+      width: clamp(70px, 20vw, 85px);
+      height: clamp(70px, 20vw, 85px);
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(3, 1fr);
@@ -101,16 +111,21 @@
 
     .dpad-btn {
       background: #4a4a5a;
-      border-radius: 2px;
+      border-radius: 3px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
+      font-size: clamp(8px, 2.5vw, 10px);
       color: #6a6a7a;
       user-select: none;
       box-shadow: 0 2px 0 #2a2a3a;
-      transition: transform .05s, box-shadow .05s;
+      transition: transform .05s, box-shadow .05s, background .05s;
+      touch-action: manipulation;
+    }
+
+    .dpad-btn:hover {
+      background: #52526a;
     }
 
     .dpad-btn:active,
@@ -138,19 +153,33 @@
       margin-bottom: 5px;
     }
 
+    .ab-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ab-label {
+      font-size: clamp(5px, 1.5vw, 6px);
+      color: #888898;
+      letter-spacing: 2px;
+    }
+
     .btn-circle {
-      width: 34px;
-      height: 34px;
+      width: clamp(28px, 8vw, 34px);
+      height: clamp(28px, 8vw, 34px);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 9px;
+      font-size: clamp(7px, 2vw, 9px);
       color: rgba(255, 255, 255, .92);
       cursor: pointer;
       box-shadow: 0 3px 0 rgba(0, 0, 0, .45);
       user-select: none;
-      transition: transform .05s, box-shadow .05s;
+      transition: transform .05s, box-shadow .05s, filter .05s;
+      touch-action: manipulation;
     }
 
     .btn-circle:active,
@@ -161,11 +190,19 @@
     }
 
     .btn-a {
-      background: #cc2244;
+      background: linear-gradient(135deg, #dd3355 0%, #bb1133 100%);
+    }
+
+    .btn-a:hover {
+      background: linear-gradient(135deg, #ee4466 0%, #cc2244 100%);
     }
 
     .btn-b {
-      background: #882266;
+      background: linear-gradient(135deg, #993377 0%, #772255 100%);
+    }
+
+    .btn-b:hover {
+      background: linear-gradient(135deg, #aa4488 0%, #883366 100%);
     }
 
     .start-select {
@@ -178,32 +215,41 @@
     .btn-small {
       background: #888898;
       border-radius: 9px;
-      width: 42px;
-      height: 11px;
+      width: clamp(36px, 10vw, 42px);
+      height: clamp(10px, 3vw, 11px);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 4px;
+      font-size: clamp(3px, 1vw, 4px);
       color: #3a3a4a;
       cursor: pointer;
       box-shadow: 0 2px 0 #5a5a6a;
       letter-spacing: 1px;
       user-select: none;
+      touch-action: manipulation;
+    }
+
+    .btn-small:hover {
+      background: #9898a8;
     }
 
     .btn-small:active,
     .btn-small.pressed {
       transform: translateY(1px);
       box-shadow: 0 1px 0 #5a5a6a;
-      filter: brightness(1.2);
+      background: #7a7a8a;
+    }
+
+    .speaker-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
     }
 
     .speaker {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      margin-top: 5px;
-      align-self: flex-end;
       margin-bottom: 7px;
     }
 
@@ -222,53 +268,68 @@
 
     .color-picker {
       display: flex;
-      gap: 7px;
+      gap: 6px;
       align-items: center;
       justify-content: center;
-    }
-
-    .color-swatch {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid rgba(0, 0, 0, 0.3);
-      transition: transform .15s, border .15s;
-    }
-
-    .color-swatch:hover {
-      transform: scale(1.2);
-    }
-
-    .color-swatch.active {
-      border: 3px solid #fff;
-      transform: scale(1.15);
+      flex-wrap: wrap;
+      max-width: 420px;
+      padding: 8px 0;
     }
 
     .color-label {
       font-family: 'Press Start 2P', monospace;
-      font-size: 4px;
-      color: #555;
+      font-size: 5px;
+      color: #6a6a80;
       letter-spacing: 1px;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .color-swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      transition: transform .15s, border .15s, box-shadow .15s;
+      flex-shrink: 0;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+    }
+
+    .color-swatch.active {
+      border: 2px solid #fff;
+      transform: scale(1.1);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
     }
 
     /* Power button */
     .power-btn {
-      width: 13px;
-      height: 13px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
-      background: #cc2244;
+      background: linear-gradient(135deg, #dd3355 0%, #bb1133 100%);
       border: 2px solid #881122;
       cursor: pointer;
       position: absolute;
       right: 18px;
       top: 12px;
-      box-shadow: 0 2px 0 #660011;
-      transition: transform .1s;
+      box-shadow: 0 2px 0 #660011, inset 0 1px 0 rgba(255,255,255,0.3);
+      transition: transform .1s, box-shadow .1s;
+      z-index: 10;
+    }
+
+    .power-btn:hover {
+      box-shadow: 0 2px 0 #660011, inset 0 1px 0 rgba(255,255,255,0.3), 0 0 8px rgba(204, 34, 68, 0.5);
     }
 
     .power-btn:active {
       transform: scale(0.9);
+      box-shadow: 0 1px 0 #660011;
     }
 
     /* ── SKIN SYSTEM ── */
@@ -311,45 +372,49 @@
     .skin-panel {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       align-items: center;
-      padding: 12px 0;
+      padding: 16px 0;
     }
 
     .skin-panel-label {
       font-family: 'Press Start 2P', monospace;
       font-size: 5px;
-      color: #666;
+      color: #6a6a80;
       letter-spacing: 1px;
     }
 
     .skin-row {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
-      max-width: 560px;
+      max-width: min(560px, calc(100vw - 32px));
+      padding: 0 8px;
     }
 
     .skin-thumb {
       width: 56px;
       height: 72px;
       cursor: pointer;
-      border: 2px solid #333;
+      border: 2px solid rgba(255, 255, 255, 0.15);
       overflow: hidden;
       flex-shrink: 0;
-      transition: border-color .12s, transform .12s;
+      transition: border-color .12s, transform .12s, box-shadow .12s;
       border-radius: 4px 4px 14px 4px;
+      background: #1a1a2a;
     }
 
     .skin-thumb:hover {
-      border-color: #aaa;
-      transform: scale(1.07);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .skin-thumb.active-skin {
       border-color: #fff;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
     }
 
     .skin-thumb svg {
@@ -362,33 +427,40 @@
     .toggle-row {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       cursor: pointer;
-      padding: 2px 0;
-      width: 420px;
+      padding: 4px 0;
+      width: min(420px, calc(100vw - 32px));
+      opacity: 0.7;
+      transition: opacity .2s;
+    }
+
+    .toggle-row:hover {
+      opacity: 1;
     }
 
     .toggle-row:hover .toggle-label {
-      color: #aaa;
+      color: #9a9ab0;
     }
 
     .toggle-label {
       font-family: 'Press Start 2P', monospace;
       font-size: 5px;
-      color: #444;
+      color: #5a5a70;
       letter-spacing: 1px;
       background: none;
       border: none;
       cursor: pointer;
-      padding: 3px 10px;
+      padding: 4px 12px;
       white-space: nowrap;
       user-select: none;
+      transition: color .2s;
     }
 
     .toggle-line {
       flex: 1;
       height: 1px;
-      background: #1e1e2e;
+      background: linear-gradient(90deg, transparent, #2a2a3e, transparent);
     }
 
     .collapsible {
@@ -396,6 +468,10 @@
       transition: max-height .4s cubic-bezier(.4, 0, .2, 1), opacity .35s;
       max-height: 600px;
       opacity: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .collapsible.collapsed {
@@ -405,20 +481,58 @@
     }
 
     /* ── RESPONSIVE FOR SMALLER SCREENS ── */
+    @media (max-width: 420px) {
+      .gameboy {
+        border-radius: 16px 16px 60px 16px;
+      }
+      
+      .skin-overlay {
+        border-radius: 18px 18px 65px 18px;
+      }
+      
+      .color-swatch {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
     @media (max-height: 700px) {
       body {
-        padding: 15px 20px;
-        justify-content: flex-start;
-        gap: 8px;
+        padding: 12px 16px;
+        gap: 10px;
       }
 
       .collapsible {
-        max-height: 300px;
+        max-height: 280px;
+      }
+    }
+
+    @media (max-height: 550px) {
+      .collapsible.collapsed + .toggle-row,
+      .toggle-row {
+        position: fixed;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(18, 18, 31, 0.9);
+        padding: 8px 16px;
+        border-radius: 20px;
+        backdrop-filter: blur(8px);
+        z-index: 100;
       }
     }
 
     body.no-scroll {
       overflow: hidden;
+    }
+
+    /* Touch feedback for mobile */
+    @media (hover: none) and (pointer: coarse) {
+      .dpad-btn:active,
+      .btn-circle:active,
+      .btn-small:active {
+        transform: scale(0.95);
+      }
     }
   </style>
 </head>
@@ -447,15 +561,15 @@
         <div class="dpad-btn" id="btn-down">▼</div>
         <div class="dpad-empty"></div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div class="ab-container">
         <div class="ab-buttons">
           <div class="btn-circle btn-b" id="btn-b">B</div>
           <div class="btn-circle btn-a" id="btn-a">A</div>
         </div>
-        <div style="font-size:6px;color:#888898;letter-spacing:2px">B &nbsp;&nbsp; A</div>
+        <span class="ab-label">B &nbsp;&nbsp; A</span>
       </div>
     </div>
-    <div style="display:flex;justify-content:flex-end;margin-top:6px">
+    <div class="speaker-container">
       <div class="speaker">
         <div class="speaker-row">
           <div class="speaker-dot"></div>
@@ -491,13 +605,13 @@
 
   <div class="toggle-row" onclick="togglePanels()" id="toggleRow">
     <div class="toggle-line"></div>
-    <span class="toggle-label" id="toggleLabel">▲ HIDE</span>
+    <span class="toggle-label" id="toggleLabel">HIDE OPTIONS</span>
     <div class="toggle-line"></div>
   </div>
 
   <div class="collapsible" id="colPanels">
     <div class="color-picker">
-      <span class="color-label">COLOR:</span>
+      <span class="color-label">SHELL COLOR</span>
       <div class="color-swatch active" style="background:#d0d0dc;" onclick="setGBColor('#d0d0dc','#a0a0b0',this)"
         title="Classic Grey"></div>
       <div class="color-swatch" style="background:#e8c8f0;" onclick="setGBColor('#e8c8f0','#c090d0',this)"
@@ -510,7 +624,7 @@
       </div>
       <div class="color-swatch" style="background:#f8f0c0;" onclick="setGBColor('#f8f0c0','#e0d080',this)"
         title="Yellow"></div>
-      <div class="color-swatch" style="background:#1a1a1a;border-color:#555;"
+      <div class="color-swatch" style="background:#1a1a1a;border-color:rgba(255,255,255,0.3);"
         onclick="setGBColor('#1a1a1a','#000',this)" title="Black"></div>
       <div class="color-swatch" style="background:#ff6b9d;" onclick="setGBColor('#ff6b9d','#c44569',this)" title="Pink">
       </div>
@@ -524,16 +638,16 @@
         title="Neon Green"></div>
       <div class="color-swatch" style="background:#ff00ff;" onclick="setGBColor('#ff00ff','#cc00cc',this)"
         title="Neon Pink"></div>
-      <div class="color-swatch" style="background:#ffffff;border-color:#ccc;"
+      <div class="color-swatch" style="background:#ffffff;border-color:rgba(0,0,0,0.2);"
         onclick="setGBColor('#ffffff','#e0e0e0',this)" title="White"></div>
       <div id="muteBtn" class="color-swatch"
-        style="background:#333;border-color:#555;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;"
-        onclick="soundEnabled=!soundEnabled;this.textContent=soundEnabled?'🔊':'🔇';" title="Toggle Sound">🔊</div>
+        style="background:#2a2a3a;border-color:rgba(255,255,255,0.2);font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;"
+        onclick="soundEnabled=!soundEnabled;this.textContent=soundEnabled?'♪':'✕';" title="Toggle Sound">♪</div>
     </div>
 
     <!-- SKIN PANEL -->
     <div class="skin-panel">
-      <span class="skin-panel-label">✦ BODY SKINS — click to apply ✦</span>
+      <span class="skin-panel-label">BODY SKINS</span>
       <div class="skin-row" id="skinTray"></div>
     </div>
   </div><!-- /colPanels -->
@@ -543,8 +657,7 @@
     function togglePanels() {
       _panelsOpen = !_panelsOpen;
       document.getElementById('colPanels').classList.toggle('collapsed', !_panelsOpen);
-      document.getElementById('toggleLabel').textContent = _panelsOpen ? '▲ HIDE' : '▼ SHOW';
-      document.getElementById('toggleRow').style.display = _panelsOpen ? 'flex' : 'none';
+      document.getElementById('toggleLabel').textContent = _panelsOpen ? 'HIDE OPTIONS' : 'SHOW OPTIONS';
       document.body.classList.toggle('no-scroll', !_panelsOpen);
     }
 

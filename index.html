@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <title>Game Boy</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Press+Start+2P&display=swap');
 
     * {
       margin: 0;
@@ -422,32 +422,63 @@
     }
 
     /* ════════ LINK CABLE MULTIPLAYER ════════ */
+    /* handwriting prompt that starts the multiplayer flow */
     .mp-launch {
       position: fixed;
-      top: 14px;
-      left: 14px;
+      top: 50%;
+      left: 50%;
+      transform: translate(150px, -150px) rotate(-7deg);
+      transform-origin: left center;
       z-index: 60;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 7px;
-      letter-spacing: 1px;
-      color: #0a1f14;
-      background: #00ff88;
-      border: 2px solid #00cc6a;
-      border-radius: 4px;
-      padding: 9px 11px;
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+      font-size: 34px;
+      line-height: 1.05;
+      color: #00ff88;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, .55);
       cursor: pointer;
-      box-shadow: 0 3px 0 #009a51;
-      transition: transform .08s, box-shadow .08s, opacity .25s;
+      background: none;
+      border: none;
+      padding: 6px;
+      text-align: center;
+      transition: transform .15s ease, opacity .25s, color .15s;
+      animation: mpWiggle 2.6s ease-in-out infinite;
     }
 
-    .mp-launch:active {
-      transform: translateY(2px);
-      box-shadow: 0 1px 0 #009a51;
+    .mp-launch:hover {
+      color: #6effb6;
+      transform: translate(150px, -150px) rotate(-7deg) scale(1.06);
+    }
+
+    .mp-launch .mp-arrow {
+      display: block;
+      font-size: 30px;
+      line-height: 1;
+      margin-top: 2px;
+      transform: rotate(20deg) scaleX(-1);
+      color: #38ada9;
+    }
+
+    @keyframes mpWiggle {
+      0%, 100% { rotate: 0deg; }
+      50% { rotate: -3deg; }
     }
 
     .mp-launch.hidden {
       opacity: 0;
       pointer-events: none;
+    }
+
+    @media (max-width: 820px) {
+      .mp-launch {
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%) rotate(-4deg);
+        font-size: 26px;
+      }
+      .mp-launch:hover {
+        transform: translateX(-50%) rotate(-4deg) scale(1.05);
+      }
     }
 
     /* modal */
@@ -696,64 +727,51 @@
       transform: translate(calc(-50% + 28vw), -50%) scale(.6);
     }
 
-    .rgb-body {
-      background: #b9b9c6;
-      border-radius: 20px 20px 84px 20px;
-      padding: 26px 26px 60px;
-      box-shadow: 0 28px 76px rgba(0, 0, 0, .6), inset 0 2px 0 rgba(255, 255, 255, .7);
+    /* the remote player's gameboy is an EXACT replica of the local shell;
+       only the screen contents differ (static label instead of live canvas) */
+    .gb-replica {
+      /* identical .gameboy model — just a different default theme color */
+      pointer-events: none;
     }
 
-    .rgb-screen {
-      background: #1e1e2e;
-      border-radius: 11px 11px 5px 5px;
-      padding: 26px 16px;
-      margin-bottom: 22px;
+    .replica-screen {
+      width: 320px;
+      height: 288px;
+      margin: 0 auto;
+      border: 2px solid #0a0a12;
+      background:
+        radial-gradient(ellipse at 50% 40%, rgba(0, 255, 136, .08), transparent 60%),
+        #1b1b2a;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 14px;
-      box-shadow: inset 0 4px 11px rgba(0, 0, 0, .7);
     }
 
-    .rgb-label {
+    .replica-id {
       font-family: 'Press Start 2P', monospace;
-      font-size: 30px;
+      font-size: 46px;
       color: #00ff88;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
     }
 
-    .rgb-sub {
+    .replica-sub {
       font-family: 'Press Start 2P', monospace;
-      font-size: 9px;
+      font-size: 10px;
       color: #55556a;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
     }
 
-    .rgb-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    /* a non-interactive port on the replica (same look, no tooltip/pulse) */
+    .gb-link-port--static {
+      cursor: default;
+      pointer-events: none;
     }
 
-    .rgb-dpad {
-      width: 64px;
-      height: 64px;
-      background:
-        linear-gradient(#3a3a4a, #3a3a4a) center / 22px 64px no-repeat,
-        linear-gradient(#3a3a4a, #3a3a4a) center / 64px 22px no-repeat;
-    }
-
-    .rgb-ab {
-      display: flex;
-      gap: 12px;
-    }
-
-    .rgb-ab i {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: #8a2452;
-      display: block;
+    .gb-link-port--static:hover {
+      transform: none;
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, .12), inset 0 -2px 3px rgba(0, 0, 0, .5), -1px 1px 2px rgba(0, 0, 0, .3);
     }
 
     /* the link cable */

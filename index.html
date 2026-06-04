@@ -848,12 +848,205 @@
       transform: translate(0, -50%);
       opacity: 1;
     }
+
+    /* ── physical link port on the GB shell (left edge) ── */
+    .gb-link-port {
+      position: absolute;
+      left: -7px;
+      top: 46%;
+      width: 18px;
+      height: 40px;
+      z-index: 4;
+      cursor: pointer;
+      border-radius: 4px 2px 2px 4px;
+      background: linear-gradient(90deg, #2b2b34 0%, #3c3c46 55%, #20202a 100%);
+      border: 1px solid rgba(0, 0, 0, .55);
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, .12), inset 0 -2px 3px rgba(0, 0, 0, .5), -1px 1px 2px rgba(0, 0, 0, .3);
+      transition: box-shadow .2s, transform .12s, left .2s;
+    }
+
+    /* the little connector slot */
+    .gb-link-port::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 7px;
+      height: 22px;
+      border-radius: 2px;
+      background: #0b0b12;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .8), inset 0 3px 4px rgba(0, 0, 0, .9);
+    }
+
+    .gb-link-port:hover {
+      transform: translateX(-2px);
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, .12), 0 0 0 2px rgba(0, 255, 136, .5), -1px 1px 4px rgba(0, 0, 0, .4);
+    }
+
+    .gb-link-port.pulse {
+      animation: portPulse 1.1s ease-in-out infinite;
+    }
+
+    @keyframes portPulse {
+      0%, 100% { box-shadow: inset 0 2px 0 rgba(255, 255, 255, .12), 0 0 0 0 rgba(0, 255, 136, .55); }
+      50% { box-shadow: inset 0 2px 0 rgba(255, 255, 255, .12), 0 0 0 7px rgba(0, 255, 136, 0); }
+    }
+
+    .gb-link-port[hidden] {
+      display: none;
+    }
+
+    /* retro tooltip */
+    .gb-port-tip {
+      position: absolute;
+      right: calc(100% + 10px);
+      top: 50%;
+      transform: translateY(-50%) translateX(6px);
+      background: #0a0a12;
+      color: #00ff88;
+      border: 1px solid #00cc6a;
+      border-radius: 3px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+      letter-spacing: 1px;
+      line-height: 1.6;
+      padding: 7px 8px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s, transform .15s;
+      z-index: 6;
+    }
+
+    .gb-port-tip::after {
+      content: '';
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 5px solid transparent;
+      border-left-color: #00cc6a;
+    }
+
+    .gb-link-port:hover .gb-port-tip,
+    .gb-link-port.show-tip .gb-port-tip {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    /* anchored code-entry popover next to the port */
+    .gb-port-popover {
+      position: absolute;
+      right: calc(100% + 14px);
+      top: 50%;
+      transform: translateY(-50%) translateX(8px) scale(.96);
+      width: 188px;
+      background: #16161f;
+      border: 2px solid #2a2a3a;
+      border-radius: 8px;
+      padding: 14px;
+      z-index: 80;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 16px 44px rgba(0, 0, 0, .65);
+      transition: opacity .18s, transform .18s;
+    }
+
+    .gb-port-popover.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(-50%) translateX(0) scale(1);
+    }
+
+    .gb-port-popover::after {
+      content: '';
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 7px solid transparent;
+      border-left-color: #2a2a3a;
+    }
+
+    .gb-port-popover h4 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: #fff;
+      letter-spacing: 1px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .gb-port-popover .pp-input {
+      width: 100%;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 15px;
+      letter-spacing: 7px;
+      text-align: center;
+      padding: 10px 8px 10px 15px;
+      background: #0a0a12;
+      border: 2px solid #2a2a3a;
+      border-radius: 5px;
+      color: #fff;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .gb-port-popover .pp-input:focus {
+      border-color: #38ada9;
+    }
+
+    .gb-port-popover .pp-go {
+      width: 100%;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      letter-spacing: 1px;
+      padding: 11px;
+      margin-top: 9px;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #00ff88;
+      color: #0a1f14;
+      border: 2px solid #00cc6a;
+      box-shadow: 0 3px 0 #009a51;
+      transition: transform .08s, box-shadow .08s;
+    }
+
+    .gb-port-popover .pp-go:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #009a51;
+    }
+
+    .gb-port-popover .pp-error {
+      color: #ff6b6b;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 5px;
+      line-height: 1.7;
+      text-align: center;
+      min-height: 10px;
+      margin-top: 8px;
+    }
   </style>
 </head>
 
 <body>
   <div class="gameboy" id="gameboy">
     <div class="skin-overlay" id="skinOverlay"></div>
+
+    <!-- physical link cable port on the left edge -->
+    <div class="gb-link-port" id="gbLinkPort" hidden role="button" tabindex="0"
+      aria-label="Link cable port. Click to plug in." onclick="mpPortClick(event)">
+      <span class="gb-port-tip">PLUG IN LINK CABLE</span>
+    </div>
+    <div class="gb-port-popover" id="gbPortPopover">
+      <h4>ENTER CODE</h4>
+      <input class="pp-input" id="gbPortInput" type="text" inputmode="numeric" maxlength="4"
+        autocomplete="off" placeholder="0000" />
+      <button class="pp-go" onclick="mpPortJoin()">CONNECT</button>
+      <div class="pp-error" id="gbPortError"></div>
+    </div>
+
     <div class="power-btn" id="powerBtn" title="Power Off/On"></div>
     <div class="screen-bezel">
       <div class="screen-label">Nintendo</div>
@@ -982,7 +1175,7 @@
         <h3>LINK CABLE</h3>
         <p>Connect two Game Boys to play together. Host a room or plug into a friend&apos;s code.</p>
         <button class="mp-btn primary" onclick="mpHost()">HOST GAME</button>
-        <button class="mp-btn secondary" onclick="mpShowJoin()">PLUG IN</button>
+        <button class="mp-btn secondary" onclick="mpRevealPort()">PLUG IN</button>
         <button class="mp-btn ghost" onclick="mpCloseModal()">CANCEL</button>
       </div>
       <!-- host pane -->
@@ -3058,22 +3251,57 @@
         });
       }
 
-      // ── JOIN (player 2) ──
-      window.mpJoin = function () {
-        const val = ($('mpJoinInput').value || '').trim();
-        const err = $('mpJoinError');
+      // ── physical link port (player 2) ──
+      const port = $('gbLinkPort');
+      const popover = $('gbPortPopover');
+
+      // PLUG IN button → close modal, reveal & highlight the hardware port
+      window.mpRevealPort = function () {
+        mpCloseModal();
+        port.hidden = false;
+        port.classList.add('pulse', 'show-tip');
+        setTimeout(() => port.classList.remove('show-tip'), 2200);
+      };
+
+      // clicking the port toggles the anchored code-entry popover (no layout change)
+      window.mpPortClick = function (e) {
+        if (e) e.stopPropagation();
+        port.hidden = false;
+        const opening = !popover.classList.contains('open');
+        popover.classList.toggle('open', opening);
+        port.classList.remove('pulse');
+        if (opening) {
+          $('gbPortError').textContent = '';
+          $('gbPortInput').value = '';
+          setTimeout(() => $('gbPortInput').focus(), 60);
+        }
+      };
+      port.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.mpPortClick(e); }
+      });
+      // clicking elsewhere closes the popover (without moving layout)
+      document.addEventListener('click', e => {
+        if (popover.classList.contains('open') &&
+          !popover.contains(e.target) && !port.contains(e.target)) {
+          popover.classList.remove('open');
+        }
+      });
+
+      // shared validation + successful-connect path
+      function attemptJoin(val, errEl) {
+        val = (val || '').trim();
         if (!/^\d{4}$/.test(val)) {
-          err.textContent = 'ENTER A 4-DIGIT CODE';
-          return;
+          errEl.textContent = 'ENTER A 4-DIGIT CODE';
+          return false;
         }
         let room; try { room = JSON.parse(localStorage.getItem(LS_KEY)); } catch (_) { room = null; }
         if (!room || !room.code) {
-          err.textContent = 'NO HOST FOUND. ASK P1 TO HOST.';
-          return;
+          errEl.textContent = 'NO HOST FOUND. ASK P1 TO HOST.';
+          return false;
         }
         if (room.code !== val) {
-          err.textContent = 'CODE DOES NOT MATCH HOST';
-          return;
+          errEl.textContent = 'CODE DOES NOT MATCH HOST';
+          return false;
         }
         // success — notify host & run join animation
         MP.role = 'guest';
@@ -3085,6 +3313,23 @@
         $('mpStatusLbl').textContent = 'LINKED';
         $('mpStatusCode').textContent = val;
         $('rgbLabel').textContent = 'P1';
+        return true;
+      }
+
+      // submit from the port popover
+      window.mpPortJoin = function () {
+        if (!attemptJoin($('gbPortInput').value, $('gbPortError'))) return;
+        popover.classList.remove('open');
+        port.classList.remove('pulse');
+        guestConnectSequence();
+      };
+      $('gbPortInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') window.mpPortJoin();
+      });
+
+      // ── JOIN via modal form (fallback) ──
+      window.mpJoin = function () {
+        if (!attemptJoin($('mpJoinInput').value, $('mpJoinError'))) return;
         mpCloseModal();
         guestConnectSequence();
       };
@@ -3125,6 +3370,9 @@
         remote.classList.remove('show', 'mp-left', 'mp-right');
         cable.classList.remove('show', 'snap', 'connected');
         document.body.classList.remove('mp-active');
+        popover.classList.remove('open');
+        port.classList.remove('pulse', 'show-tip');
+        port.hidden = true;
       };
 
       // submit join on Enter

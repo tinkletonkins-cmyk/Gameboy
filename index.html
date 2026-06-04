@@ -420,6 +420,434 @@
     body.no-scroll {
       overflow: hidden;
     }
+
+    /* ════════ LINK CABLE MULTIPLAYER ════════ */
+    .mp-launch {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 60;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      letter-spacing: 1px;
+      color: #0a1f14;
+      background: #00ff88;
+      border: 2px solid #00cc6a;
+      border-radius: 4px;
+      padding: 9px 11px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #009a51;
+      transition: transform .08s, box-shadow .08s, opacity .25s;
+    }
+
+    .mp-launch:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #009a51;
+    }
+
+    .mp-launch.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* modal */
+    .mp-modal-back {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(8, 8, 16, .82);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .mp-modal-back.show {
+      display: flex;
+    }
+
+    .mp-modal {
+      background: #16161f;
+      border: 2px solid #2a2a3a;
+      border-radius: 10px;
+      padding: 22px;
+      width: 310px;
+      max-width: 100%;
+      font-family: 'Press Start 2P', monospace;
+      color: #cfcfe0;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .7);
+    }
+
+    .mp-modal h3 {
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: #fff;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .mp-modal p {
+      font-size: 6px;
+      line-height: 1.9;
+      color: #8a8a9a;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .mp-pane {
+      display: none;
+    }
+
+    .mp-pane.active {
+      display: block;
+    }
+
+    .mp-btn {
+      display: block;
+      width: 100%;
+      font-family: inherit;
+      font-size: 8px;
+      letter-spacing: 1px;
+      padding: 13px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 2px solid;
+      margin-top: 10px;
+      transition: transform .08s, box-shadow .08s;
+    }
+
+    .mp-btn:active {
+      transform: translateY(2px);
+    }
+
+    .mp-btn.primary {
+      background: #00ff88;
+      color: #0a1f14;
+      border-color: #00cc6a;
+      box-shadow: 0 3px 0 #009a51;
+    }
+
+    .mp-btn.primary:active {
+      box-shadow: 0 1px 0 #009a51;
+    }
+
+    .mp-btn.secondary {
+      background: #38ada9;
+      color: #06201f;
+      border-color: #2c8a85;
+      box-shadow: 0 3px 0 #1f6360;
+    }
+
+    .mp-btn.secondary:active {
+      box-shadow: 0 1px 0 #1f6360;
+    }
+
+    .mp-btn.ghost {
+      background: transparent;
+      color: #9a9aae;
+      border-color: #2a2a3a;
+    }
+
+    .mp-code {
+      font-size: 26px;
+      letter-spacing: 10px;
+      color: #00ff88;
+      text-align: center;
+      background: #0a0a12;
+      border: 2px dashed #00cc6a;
+      border-radius: 6px;
+      padding: 16px 16px 16px 26px;
+      margin: 4px 0 12px;
+    }
+
+    .mp-input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 20px;
+      letter-spacing: 10px;
+      text-align: center;
+      padding: 14px 14px 14px 24px;
+      background: #0a0a12;
+      border: 2px solid #2a2a3a;
+      border-radius: 6px;
+      color: #fff;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .mp-input:focus {
+      border-color: #38ada9;
+    }
+
+    .mp-error {
+      color: #ff6b6b;
+      font-size: 6px;
+      text-align: center;
+      min-height: 12px;
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+
+    .mp-wait {
+      font-size: 6px;
+      color: #00ff88;
+      text-align: center;
+      margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    .mp-wait .dots::after {
+      content: '';
+      animation: mpDots 1.4s steps(4, end) infinite;
+    }
+
+    @keyframes mpDots {
+      0% { content: ''; }
+      25% { content: '.'; }
+      50% { content: '..'; }
+      75% { content: '...'; }
+    }
+
+    /* status banner */
+    .mp-status {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 60;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: #cfcfe0;
+      background: rgba(10, 10, 18, .9);
+      border: 1px solid #2a2a3a;
+      border-radius: 22px;
+      padding: 8px 8px 8px 16px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      white-space: nowrap;
+    }
+
+    .mp-status.show {
+      display: flex;
+    }
+
+    .mp-status .lbl {
+      color: #00ff88;
+    }
+
+    .mp-status .code {
+      color: #fff;
+      letter-spacing: 4px;
+    }
+
+    .mp-status .mp-exit {
+      cursor: pointer;
+      color: #ff8a8a;
+      border: 1px solid #3a3a4a;
+      border-radius: 14px;
+      padding: 6px 9px;
+      font-size: 6px;
+    }
+
+    .mp-status .mp-exit:hover {
+      border-color: #ff8a8a;
+    }
+
+    /* local gameboy sliding (override .gameboy transition to add transform) */
+    #gameboy {
+      transition: background .3s, box-shadow .3s, transform .7s cubic-bezier(.45, 0, .2, 1);
+    }
+
+    body.mp-active #gameboy.mp-left {
+      transform: translateX(-28vw) scale(.6);
+    }
+
+    body.mp-active #gameboy.mp-right {
+      transform: translateX(28vw) scale(.6);
+    }
+
+    body.mp-active #gameboy.mp-prejoin {
+      transform: translateX(11vw) scale(.6);
+    }
+
+    /* remote (other player) gameboy silhouette */
+    #remoteGameboy {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: 400px;
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(.6);
+      transition: opacity .45s ease, transform .7s cubic-bezier(.45, 0, .2, 1);
+    }
+
+    #remoteGameboy.show {
+      opacity: 1;
+    }
+
+    #remoteGameboy.mp-left {
+      transform: translate(calc(-50% - 28vw), -50%) scale(.6);
+    }
+
+    #remoteGameboy.mp-right {
+      transform: translate(calc(-50% + 28vw), -50%) scale(.6);
+    }
+
+    .rgb-body {
+      background: #b9b9c6;
+      border-radius: 20px 20px 84px 20px;
+      padding: 26px 26px 60px;
+      box-shadow: 0 28px 76px rgba(0, 0, 0, .6), inset 0 2px 0 rgba(255, 255, 255, .7);
+    }
+
+    .rgb-screen {
+      background: #1e1e2e;
+      border-radius: 11px 11px 5px 5px;
+      padding: 26px 16px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      box-shadow: inset 0 4px 11px rgba(0, 0, 0, .7);
+    }
+
+    .rgb-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 30px;
+      color: #00ff88;
+      letter-spacing: 2px;
+    }
+
+    .rgb-sub {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: #55556a;
+      letter-spacing: 2px;
+    }
+
+    .rgb-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rgb-dpad {
+      width: 64px;
+      height: 64px;
+      background:
+        linear-gradient(#3a3a4a, #3a3a4a) center / 22px 64px no-repeat,
+        linear-gradient(#3a3a4a, #3a3a4a) center / 64px 22px no-repeat;
+    }
+
+    .rgb-ab {
+      display: flex;
+      gap: 12px;
+    }
+
+    .rgb-ab i {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #8a2452;
+      display: block;
+    }
+
+    /* the link cable */
+    #linkCable {
+      position: fixed;
+      z-index: 7;
+      height: 22px;
+      display: none;
+      pointer-events: none;
+    }
+
+    #linkCable.show {
+      display: block;
+    }
+
+    .cable-wire {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%) scaleX(0);
+      transform-origin: left center;
+      height: 9px;
+      background: #20202c;
+      border: 1px solid #0c0c14;
+      border-radius: 5px;
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, .08);
+    }
+
+    #linkCable.snap .cable-wire {
+      animation: cableGrow .42s cubic-bezier(.3, .9, .4, 1) forwards;
+    }
+
+    @keyframes cableGrow {
+      0% { transform: translateY(-50%) scaleX(0); }
+      80% { transform: translateY(-50%) scaleX(1.04); }
+      100% { transform: translateY(-50%) scaleX(1); }
+    }
+
+    .cable-plug {
+      position: absolute;
+      top: 50%;
+      width: 16px;
+      height: 22px;
+      background: #43434f;
+      border: 2px solid #0c0c14;
+      border-radius: 3px;
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, .15);
+      transform: translateY(-50%);
+    }
+
+    .cable-plug.l {
+      left: -10px;
+      transform: translate(-22px, -50%);
+      opacity: 0;
+    }
+
+    .cable-plug.r {
+      right: -10px;
+      transform: translate(22px, -50%);
+      opacity: 0;
+    }
+
+    #linkCable.snap .cable-plug.l {
+      animation: plugInL .42s cubic-bezier(.3, .9, .4, 1) .12s forwards;
+    }
+
+    #linkCable.snap .cable-plug.r {
+      animation: plugInR .42s cubic-bezier(.3, .9, .4, 1) .12s forwards;
+    }
+
+    @keyframes plugInL {
+      0% { transform: translate(-22px, -50%); opacity: 0; }
+      60% { opacity: 1; }
+      80% { transform: translate(2px, -50%); opacity: 1; }
+      100% { transform: translate(0, -50%); opacity: 1; }
+    }
+
+    @keyframes plugInR {
+      0% { transform: translate(22px, -50%); opacity: 0; }
+      60% { opacity: 1; }
+      80% { transform: translate(-2px, -50%); opacity: 1; }
+      100% { transform: translate(0, -50%); opacity: 1; }
+    }
+
+    #linkCable.connected .cable-wire {
+      transform: translateY(-50%) scaleX(1);
+    }
+
+    #linkCable.connected .cable-plug.l,
+    #linkCable.connected .cable-plug.r {
+      transform: translate(0, -50%);
+      opacity: 1;
+    }
   </style>
 </head>
 
@@ -537,6 +965,69 @@
       <div class="skin-row" id="skinTray"></div>
     </div>
   </div><!-- /colPanels -->
+
+  <!-- ════════ LINK CABLE MULTIPLAYER ════════ -->
+  <button class="mp-launch" id="mpLaunch" onclick="mpOpen()">2P LINK</button>
+
+  <div class="mp-status" id="mpStatus">
+    <span class="lbl" id="mpStatusLbl">HOSTING</span>
+    <span class="code" id="mpStatusCode">0000</span>
+    <span class="mp-exit" onclick="mpExit()">EXIT</span>
+  </div>
+
+  <div class="mp-modal-back" id="mpModal">
+    <div class="mp-modal">
+      <!-- choose pane -->
+      <div class="mp-pane active" id="mpPaneChoose">
+        <h3>LINK CABLE</h3>
+        <p>Connect two Game Boys to play together. Host a room or plug into a friend&apos;s code.</p>
+        <button class="mp-btn primary" onclick="mpHost()">HOST GAME</button>
+        <button class="mp-btn secondary" onclick="mpShowJoin()">PLUG IN</button>
+        <button class="mp-btn ghost" onclick="mpCloseModal()">CANCEL</button>
+      </div>
+      <!-- host pane -->
+      <div class="mp-pane" id="mpPaneHost">
+        <h3>YOUR ROOM CODE</h3>
+        <p>Share this code. Player 2 plugs it into their Game Boy.</p>
+        <div class="mp-code" id="mpHostCode">0000</div>
+        <button class="mp-btn secondary" id="mpCopyBtn" onclick="mpCopyCode()">COPY CODE</button>
+        <div class="mp-wait">WAITING FOR PLAYER 2<span class="dots"></span></div>
+        <button class="mp-btn ghost" onclick="mpExit()">CANCEL</button>
+      </div>
+      <!-- join pane -->
+      <div class="mp-pane" id="mpPaneJoin">
+        <h3>PLUG IN</h3>
+        <p>Enter the 4-digit room code from the host.</p>
+        <input class="mp-input" id="mpJoinInput" type="text" inputmode="numeric" maxlength="4"
+          autocomplete="off" placeholder="0000" />
+        <div class="mp-error" id="mpJoinError"></div>
+        <button class="mp-btn secondary" onclick="mpJoin()">CONNECT</button>
+        <button class="mp-btn ghost" onclick="mpShowChoose()">BACK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- remote player's gameboy silhouette -->
+  <div id="remoteGameboy" aria-hidden="true">
+    <div class="rgb-body">
+      <div class="rgb-screen">
+        <span class="rgb-label" id="rgbLabel">P2</span>
+        <span class="rgb-sub" id="rgbSub">LINKED</span>
+      </div>
+      <div class="rgb-controls">
+        <div class="rgb-dpad"></div>
+        <div class="rgb-ab"><i></i><i></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- the animated link cable -->
+  <div id="linkCable" aria-hidden="true">
+    <div class="cable-plug l"></div>
+    <div class="cable-wire"></div>
+    <div class="cable-plug r"></div>
+  </div>
+
   <script>
     // ── Toggle panels ──
     let _panelsOpen = true;
@@ -2444,6 +2935,203 @@
     }
 
     loop();
+
+    /* ════════ LINK CABLE MULTIPLAYER ════════ */
+    (function () {
+      const LS_KEY = 'gb_link_room';
+      const MP = { role: null, code: null, connected: false };
+
+      const $ = id => document.getElementById(id);
+      const gameboy = $('gameboy');
+      const remote = $('remoteGameboy');
+      const cable = $('linkCable');
+      const launch = $('mpLaunch');
+      const modal = $('mpModal');
+      const status = $('mpStatus');
+
+      // ── modal helpers ──
+      function showPane(id) {
+        ['mpPaneChoose', 'mpPaneHost', 'mpPaneJoin'].forEach(p =>
+          $(p).classList.toggle('active', p === id));
+      }
+      window.mpOpen = function () { showPane('mpPaneChoose'); modal.classList.add('show'); };
+      window.mpCloseModal = function () { modal.classList.remove('show'); };
+      window.mpShowChoose = function () { showPane('mpPaneChoose'); };
+      window.mpShowJoin = function () {
+        showPane('mpPaneJoin');
+        $('mpJoinError').textContent = '';
+        $('mpJoinInput').value = '';
+        setTimeout(() => $('mpJoinInput').focus(), 60);
+      };
+
+      // ── cable positioning ──
+      function layoutCable() {
+        if (!remote.classList.contains('show')) return;
+        const a = gameboy.getBoundingClientRect();
+        const b = remote.getBoundingClientRect();
+        const localLeft = a.left < b.left;
+        const startX = localLeft ? a.right : b.right;
+        const endX = localLeft ? b.left : a.left;
+        const y = ((a.top + a.bottom) / 2 + (b.top + b.bottom) / 2) / 2;
+        cable.style.left = startX + 'px';
+        cable.style.width = Math.max(0, endX - startX) + 'px';
+        cable.style.top = (y - 11) + 'px';
+      }
+      function trackCable(ms) {
+        const end = performance.now() + ms;
+        (function step() {
+          layoutCable();
+          if (performance.now() < end) requestAnimationFrame(step);
+        })();
+      }
+      window.addEventListener('resize', layoutCable);
+
+      // ── align remote gameboy vertically with local one ──
+      function alignRemoteY() {
+        const a = gameboy.getBoundingClientRect();
+        remote.style.top = ((a.top + a.bottom) / 2) + 'px';
+      }
+
+      // ── HOST ──
+      window.mpHost = function () {
+        const code = String(Math.floor(1000 + Math.random() * 9000));
+        MP.role = 'host';
+        MP.code = code;
+        MP.connected = false;
+        try {
+          localStorage.setItem(LS_KEY, JSON.stringify({ code, joined: false, ts: Date.now() }));
+        } catch (e) { }
+        $('mpHostCode').textContent = code;
+        $('mpStatusLbl').textContent = 'HOSTING';
+        $('mpStatusCode').textContent = code;
+        showPane('mpPaneHost');
+        // slide host gameboy to the LEFT half, expose empty port
+        document.body.classList.add('mp-active');
+        gameboy.classList.remove('mp-right', 'mp-prejoin');
+        gameboy.classList.add('mp-left');
+        status.classList.add('show');
+        launch.classList.add('hidden');
+      };
+
+      window.mpCopyCode = function () {
+        const code = MP.code || $('mpHostCode').textContent;
+        const done = () => {
+          const btn = $('mpCopyBtn');
+          const prev = btn.textContent;
+          btn.textContent = 'COPIED!';
+          setTimeout(() => { btn.textContent = prev; }, 1400);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(done).catch(done);
+        } else {
+          const t = document.createElement('textarea');
+          t.value = code; document.body.appendChild(t); t.select();
+          try { document.execCommand('copy'); } catch (e) { }
+          document.body.removeChild(t); done();
+        }
+      };
+
+      // host detects player 2 plugging in
+      window.addEventListener('storage', function (e) {
+        if (e.key !== LS_KEY || MP.role !== 'host' || MP.connected) return;
+        let data; try { data = JSON.parse(e.newValue); } catch (_) { return; }
+        if (data && data.code === MP.code && data.joined) {
+          hostOnGuestJoined();
+        }
+      });
+
+      function hostOnGuestJoined() {
+        MP.connected = true;
+        mpCloseModal();
+        $('mpStatusLbl').textContent = 'LINKED';
+        $('rgbLabel').textContent = 'P2';
+        // bring in player 2's gameboy on the RIGHT + plug the cable in
+        remote.classList.remove('mp-left');
+        remote.classList.add('show', 'mp-right');
+        alignRemoteY();
+        requestAnimationFrame(() => {
+          layoutCable();
+          cable.classList.remove('connected');
+          cable.classList.add('show', 'snap');
+          trackCable(900);
+          setTimeout(() => { cable.classList.add('connected'); }, 540);
+        });
+      }
+
+      // ── JOIN (player 2) ──
+      window.mpJoin = function () {
+        const val = ($('mpJoinInput').value || '').trim();
+        const err = $('mpJoinError');
+        if (!/^\d{4}$/.test(val)) {
+          err.textContent = 'ENTER A 4-DIGIT CODE';
+          return;
+        }
+        let room; try { room = JSON.parse(localStorage.getItem(LS_KEY)); } catch (_) { room = null; }
+        if (!room || !room.code) {
+          err.textContent = 'NO HOST FOUND. ASK P1 TO HOST.';
+          return;
+        }
+        if (room.code !== val) {
+          err.textContent = 'CODE DOES NOT MATCH HOST';
+          return;
+        }
+        // success — notify host & run join animation
+        MP.role = 'guest';
+        MP.code = val;
+        MP.connected = true;
+        try {
+          localStorage.setItem(LS_KEY, JSON.stringify({ code: val, joined: true, ts: Date.now() }));
+        } catch (e) { }
+        $('mpStatusLbl').textContent = 'LINKED';
+        $('mpStatusCode').textContent = val;
+        $('rgbLabel').textContent = 'P1';
+        mpCloseModal();
+        guestConnectSequence();
+      };
+
+      function guestConnectSequence() {
+        document.body.classList.add('mp-active');
+        status.classList.add('show');
+        launch.classList.add('hidden');
+        // step 1: host (remote) appears on the LEFT, local sits just right of center
+        remote.classList.remove('mp-right');
+        remote.classList.add('show', 'mp-left');
+        gameboy.classList.remove('mp-left', 'mp-right');
+        gameboy.classList.add('mp-prejoin');
+        alignRemoteY();
+        // step 2: plug the cable into both consoles
+        requestAnimationFrame(() => {
+          layoutCable();
+          cable.classList.add('show', 'snap');
+          trackCable(700);
+        });
+        // step 3: after the plug-in completes, slide P2 into the RIGHT half
+        setTimeout(() => {
+          cable.classList.add('connected');
+          gameboy.classList.remove('mp-prejoin');
+          gameboy.classList.add('mp-right');
+          trackCable(800);
+        }, 620);
+      }
+
+      // ── EXIT / reset ──
+      window.mpExit = function () {
+        if (MP.role === 'host') { try { localStorage.removeItem(LS_KEY); } catch (e) { } }
+        MP.role = null; MP.code = null; MP.connected = false;
+        mpCloseModal();
+        status.classList.remove('show');
+        launch.classList.remove('hidden');
+        gameboy.classList.remove('mp-left', 'mp-right', 'mp-prejoin');
+        remote.classList.remove('show', 'mp-left', 'mp-right');
+        cable.classList.remove('show', 'snap', 'connected');
+        document.body.classList.remove('mp-active');
+      };
+
+      // submit join on Enter
+      $('mpJoinInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') window.mpJoin();
+      });
+    })();
   </script>
 </body>
 

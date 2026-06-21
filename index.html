@@ -744,6 +744,7 @@
       { id: 'pong', label: 'PONG', sub: 'SPORTS', color: '#00d0ff', color2: '#0064a0', desc: 'MOVE PADDLE TO RETURN BALL' },
       { id: 'g2048', label: '2048', sub: 'SLIDE', color: '#edcf72', color2: '#b89840', desc: 'MERGE NUMBERS UP TO 2048' },
       { id: 'asteroids', label: 'ASTEROIDS', sub: 'ARCADE', color: '#a0a0a0', color2: '#606060', desc: 'SHOOT ASTEROIDS IN SPACE' },
+      { id: 'mines', label: 'MINESWEEPER', sub: 'PUZZLE', color: '#8a8a98', color2: '#5a5a68', desc: 'CLEAR THE FIELD, AVOID MINES' },
     ];
 
     function setCartBorder(id) {
@@ -800,6 +801,14 @@
         fr(x + 4, y + 6, 4, 3, '#909090');
         fr(x + 9, y + 7, 2, 2, '#707070');
         fr(x + 5, y + 4, 1, 1, '#ffffff');
+      } else if (id === 'mines') {
+        fr(x + 4, y + 5, 4, 4, '#1a1a22');
+        fr(x + 5, y + 4, 2, 6, '#1a1a22');
+        fr(x + 4, y + 7, 6, 1, '#1a1a22');
+        fr(x + 4, y + 8, 1, 1, '#1a1a22');
+        fr(x + 9, y + 8, 1, 1, '#1a1a22');
+        fr(x + 5, y + 6, 1, 1, '#ffffff');
+        fr(x + 3, y + 7, 1, 1, '#c02020');
       }
     }
     let launchSel = 0, settingsSel = 0;
@@ -822,6 +831,7 @@
         else if (id === 'pong') { initPong(); screen = 'pong'; }
         else if (id === 'g2048') { init2048(); screen = 'g2048'; }
         else if (id === 'asteroids') { initAsteroids(); screen = 'asteroids'; }
+        else if (id === 'mines') { initMines(); screen = 'mines'; }
       }
     }
     function drawLauncher() {
@@ -2301,6 +2311,7 @@
       else if (screen === 'pong') updatePong();
       else if (screen === 'g2048') update2048();
       else if (screen === 'asteroids') updateAsteroids();
+      else if (screen === 'mines') updateMines();
     }
 
     function loop() {
@@ -2323,6 +2334,7 @@
         else if (screen === 'pong') drawPong();
         else if (screen === 'g2048') draw2048();
         else if (screen === 'asteroids') drawAsteroids();
+        else if (screen === 'mines') drawMines();
       }
       update();
       for (const k in jp) jp[k] = false;
@@ -2440,6 +2452,231 @@
       fr(0, 0, 160, 11, 'rgba(0,0,50,0.8)'); gt('SCORE', 2, 9, P.w, 5); gt(`${as.score}`, 50, 9, P.w, 5); gt(`LVL ${as.level}`, 100, 9, P.w, 5);
       for (let i = 0; i < as.lives; i++) { ctx.save(); ctx.translate(130 + i * 10, 6); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(3, 0); ctx.lineTo(-2, -2); ctx.lineTo(-1, 0); ctx.lineTo(-2, 2); ctx.closePath(); ctx.stroke(); ctx.restore(); }
       if (as.gameOver) { fr(20, 45, 120, 62, P.d); fr(20, 45, 120, 1, P.l); fr(20, 107, 120, 1, P.l); fr(20, 45, 1, 62, P.l); fr(140, 45, 1, 62, P.l); gt('GAME OVER', 28, 60, P.l, 7); gt(`SCORE: ${as.score}`, 26, 72, P.m, 5); gt(`BEST: ${getHighScore('asteroids')}`, 26, 80, P.m, 4); gt('A: RETRY', 32, 92, tick % 40 < 24 ? P.w : P.m, 5); gt('B: MENU', 38, 104, P.m, 5); }
+      scanlines(); if (paused) drawPauseMenu();
+    }
+
+    // ═══ MINESWEEPER ═══
+    const MINE_LEVELS = [
+      { id: 'beg', name: 'BEGINNER', short: 'EASY', cols: 9, rows: 9, mines: 10, cell: 13 },
+      { id: 'int', name: 'INTERMEDIATE', short: 'MED', cols: 13, rows: 13, mines: 30, cell: 9 },
+      { id: 'exp', name: 'EXPERT', short: 'HARD', cols: 16, rows: 16, mines: 60, cell: 8 },
+    ];
+    const MINE_NUMCOL = ['', '#2020cc', '#208020', '#cc2020', '#200080', '#800020', '#208080', '#000000', '#606060'];
+    let ms = {};
+
+    function loadMineBests() { try { return JSON.parse(localStorage.getItem('gb_minebest')) || {}; } catch (e) { return {}; } }
+    function saveMineBest(id, secs) {
+      const b = loadMineBests();
+      if (secs < (b[id] || Infinity)) { b[id] = secs; try { localStorage.setItem('gb_minebest', JSON.stringify(b)); } catch (e) { } }
+      return b[id];
+    }
+
+    function initMines() { ms = { sub: 'level', levelSel: 0, bests: loadMineBests() }; }
+
+    function startMine(idx) {
+      const lv = MINE_LEVELS[idx];
+      const grid = [];
+      for (let r = 0; r < lv.rows; r++) grid.push(Array.from({ length: lv.cols }, () => ({ mine: false, adj: 0, rev: false, flag: false })));
+      ms = { sub: 'play', lv: lv, grid: grid, cx: Math.floor(lv.cols / 2), cy: Math.floor(lv.rows / 2),
+        firstClick: true, flags: 0, revealed: 0, startTick: 0, secs: 0, over: false, win: false, bests: ms.bests };
+    }
+
+    function minePlaceMines(safeX, safeY) {
+      const lv = ms.lv, g = ms.grid;
+      const forbidden = new Set();
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) forbidden.add((safeX + dx) + ',' + (safeY + dy));
+      let placed = 0;
+      while (placed < lv.mines) {
+        const x = Math.floor(Math.random() * lv.cols), y = Math.floor(Math.random() * lv.rows);
+        if (g[y][x].mine || forbidden.has(x + ',' + y)) continue;
+        g[y][x].mine = true; placed++;
+      }
+      for (let y = 0; y < lv.rows; y++) for (let x = 0; x < lv.cols; x++) {
+        if (g[y][x].mine) continue;
+        let n = 0;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx, ny = y + dy; if (nx >= 0 && nx < lv.cols && ny >= 0 && ny < lv.rows && g[ny][nx].mine) n++;
+        }
+        g[y][x].adj = n;
+      }
+    }
+
+    function mineReveal(x, y) {
+      const lv = ms.lv, g = ms.grid;
+      if (x < 0 || x >= lv.cols || y < 0 || y >= lv.rows) return;
+      const c = g[y][x];
+      if (c.rev || c.flag) return;
+      c.rev = true; ms.revealed++;
+      if (c.mine) { ms.over = true; return; }
+      if (c.adj === 0) {
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { if (dx || dy) mineReveal(x + dx, y + dy); }
+      }
+    }
+
+    function mineCheckWin() {
+      const lv = ms.lv, g = ms.grid;
+      if (ms.revealed !== lv.cols * lv.rows - lv.mines) return;
+      ms.win = true;
+      ms.secs = Math.floor((tick - ms.startTick) / 60);
+      saveMineBest(ms.lv.id, ms.secs);
+      sfxPowerUp();
+    }
+
+    function updateMines() {
+      if (pop('Enter')) { paused = !paused; return; }
+      if (paused) { if (cfm()) paused = false; else if (pop('b')) { paused = false; screen = 'launcher'; } return; }
+
+      if (ms.sub === 'level') {
+        if (pop('ArrowUp')) ms.levelSel = (ms.levelSel + MINE_LEVELS.length - 1) % MINE_LEVELS.length;
+        if (pop('ArrowDown')) ms.levelSel = (ms.levelSel + 1) % MINE_LEVELS.length;
+        if (cfm()) { startMine(ms.levelSel); return; }
+        if (pop('b')) { screen = 'launcher'; return; }
+        return;
+      }
+
+      // sub === 'play'
+      if (ms.over) { if (cfm()) { startMine(MINE_LEVELS.indexOf(ms.lv)); return; } if (pop('b')) screen = 'launcher'; return; }
+      if (ms.win) { if (cfm()) { startMine(MINE_LEVELS.indexOf(ms.lv)); return; } if (pop('b')) screen = 'launcher'; return; }
+
+      const lv = ms.lv;
+      if (pop('ArrowLeft')) ms.cx = Math.max(0, ms.cx - 1);
+      if (pop('ArrowRight')) ms.cx = Math.min(lv.cols - 1, ms.cx + 1);
+      if (pop('ArrowUp')) ms.cy = Math.max(0, ms.cy - 1);
+      if (pop('ArrowDown')) ms.cy = Math.min(lv.rows - 1, ms.cy + 1);
+
+      if (cfm()) {
+        const c = ms.grid[ms.cy][ms.cx];
+        if (!c.flag && !c.rev) {
+          if (ms.firstClick) { minePlaceMines(ms.cx, ms.cy); ms.firstClick = false; ms.startTick = tick; }
+          mineReveal(ms.cx, ms.cy);
+          if (ms.over) sfxDie(); else if (c.adj === 0) sfxBounce();
+          if (!ms.over) mineCheckWin();
+        }
+        return;
+      }
+      if (pop('b')) {
+        const c = ms.grid[ms.cy][ms.cx];
+        if (!c.rev) { c.flag = !c.flag; ms.flags += c.flag ? 1 : -1; sfxPause(); }
+        return;
+      }
+    }
+
+    function drawMines() {
+      fr(0, 0, 160, 144, '#1a1a22');
+
+      if (ms.sub === 'level') {
+        ct('MINESWEEPER', 16, '#c8c8d4', 8);
+        fr(0, 28, 160, 1, '#3a3a48');
+        ct('SELECT LEVEL', 38, '#888', 5);
+        MINE_LEVELS.forEach((lv, i) => {
+          const y = 44 + i * 26, sel = i === ms.levelSel;
+          fr(sel ? 14 : 18, y - 1, 132, 22, sel ? '#2a2a3a' : '#14141c');
+          if (sel) { ctx.strokeStyle = '#c8c8d4'; ctx.lineWidth = 1; ctx.strokeRect(14, y - 1, 132, 22); }
+          gt('>', sel ? 8 : 12, y + 8, sel ? '#ffcc00' : '#444', 7);
+          ctx.save(); ctx.fillStyle = sel ? '#ffffff' : '#aaa'; ctx.font = `6px 'Press Start 2P',monospace`;
+          ctx.fillText(lv.name, 24, y + 9); ctx.restore();
+          gt(lv.cols + 'X' + lv.rows, 24, y + 17, sel ? '#888' : '#555', 4);
+          gt(lv.mines + ' MINES', 96, y + 17, sel ? '#c06060' : '#604040', 4);
+          const best = ms.bests[lv.id];
+          if (best) gt('BST ' + best + 's', 96, y + 9, sel ? '#60c060' : '#306030', 4);
+        });
+        fr(0, 128, 160, 1, '#3a3a48');
+        if (tick % 40 < 24) ct('A: START   B: BACK', 140, '#ffcc00', 5);
+        scanlines(); if (paused) drawPauseMenu();
+        return;
+      }
+
+      // sub === 'play'
+      const lv = ms.lv, g = ms.grid;
+      const gx = Math.floor((160 - lv.cols * lv.cell) / 2);
+      const headerH = lv.cell <= 8 ? 12 : 15;
+      const gy = headerH + 1;
+
+      // header
+      fr(0, 0, 160, headerH, '#2a2a36');
+      fr(0, headerH, 160, 1, '#5a5a68');
+      if (!ms.firstClick && !ms.over && !ms.win) ms.secs = Math.floor((tick - ms.startTick) / 60);
+      gt('F:' + String(Math.max(0, lv.mines - ms.flags)).padStart(3, '0'), 3, headerH - 4, '#c06060', 5);
+      ct(lv.short, headerH - 4, '#c8c8d4', 5);
+      gt('T:' + String(Math.min(999, ms.secs)).padStart(3, '0'), 120, headerH - 4, '#60c060', 5);
+
+      // grid
+      for (let y = 0; y < lv.rows; y++) for (let x = 0; x < lv.cols; x++) {
+        const c = g[y][x], px = gx + x * lv.cell, py = gy + y * lv.cell;
+        if (c.rev) {
+          fr(px, py, lv.cell, lv.cell, '#0a0a12');
+          ctx.strokeStyle = '#1a1a26'; ctx.lineWidth = 1; ctx.strokeRect(px + .5, py + .5, lv.cell - 1, lv.cell - 1);
+          if (c.mine) {
+            const m = Math.floor(lv.cell / 2), mx = px + m, my = py + m;
+            fr(mx - 1, my - 2, 3, 5, '#ff4040'); fr(mx - 2, my - 1, 5, 3, '#ff4040');
+            fr(mx, my, 1, 1, '#ffffff');
+          } else if (c.adj > 0) {
+            const s = lv.cell <= 8 ? 5 : 6;
+            ctx.save(); ctx.fillStyle = MINE_NUMCOL[c.adj]; ctx.font = `${s}px 'Press Start 2P',monospace`;
+            const tw = ctx.measureText(c.adj).width;
+            ctx.fillText(c.adj, px + Math.floor((lv.cell - tw) / 2), py + lv.cell - 2);
+            ctx.restore();
+          }
+        } else {
+          fr(px, py, lv.cell, lv.cell, '#6a6a78');
+          fr(px, py, lv.cell, 1, '#9a9aa8'); fr(px, py, 1, lv.cell, '#9a9aa8');
+          fr(px, py + lv.cell - 1, lv.cell, 1, '#3a3a48'); fr(px + lv.cell - 1, py, 1, lv.cell, '#3a3a48');
+          if (c.flag) {
+            const m = Math.floor(lv.cell / 2), mx = px + m, my = py + m;
+            fr(mx, my - 2, 1, 5, '#dddde0');
+            fr(mx + 1, my - 2, 3, 2, '#cc2020');
+          }
+          // reveal wrongly-flagged safe cells on loss
+          if (ms.over && c.flag && !c.mine) {
+            ctx.strokeStyle = '#cc2020'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(px + 1, py + 1); ctx.lineTo(px + lv.cell - 1, py + lv.cell - 1); ctx.moveTo(px + lv.cell - 1, py + 1); ctx.lineTo(px + 1, py + lv.cell - 1); ctx.stroke();
+          }
+        }
+      }
+
+      // cursor
+      if (!ms.over && !ms.win) {
+        const px = gx + ms.cx * lv.cell, py = gy + ms.cy * lv.cell;
+        const col = tick % 20 < 12 ? '#ffcc00' : '#ffffff';
+        ctx.strokeStyle = col; ctx.lineWidth = 1;
+        ctx.strokeRect(px - .5, py - .5, lv.cell + 1, lv.cell + 1);
+      }
+
+      // on loss, reveal every mine
+      if (ms.over) {
+        for (let y = 0; y < lv.rows; y++) for (let x = 0; x < lv.cols; x++) {
+          if (g[y][x].mine && !g[y][x].rev) {
+            const px = gx + x * lv.cell, py = gy + y * lv.cell;
+            fr(px + 1, py + 1, lv.cell - 2, lv.cell - 2, '#2a0808');
+            const m = Math.floor(lv.cell / 2), mx = px + m, my = py + m;
+            fr(mx - 1, my - 2, 3, 5, '#ff4040'); fr(mx - 2, my - 1, 5, 3, '#ff4040'); fr(mx, my, 1, 1, '#ffffff');
+          }
+        }
+      }
+
+      // footer hint
+      const fy = gy + lv.rows * lv.cell + 2;
+      if (fy < 142) gt('A:DIG B:FLAG  START:PAUSE', 1, Math.min(fy, 140), '#555', 4);
+
+      // overlays
+      if (ms.over) {
+        fr(20, 50, 120, 50, P.d); fr(20, 50, 120, 1, '#cc2020'); fr(20, 99, 120, 1, '#cc2020');
+        fr(20, 50, 1, 50, '#cc2020'); fr(139, 50, 1, 50, '#cc2020');
+        ct('BOOM!', 66, P.l, 9);
+        ct('TIME:' + ms.secs + 's', 82, P.w, 5);
+        if (tick % 40 < 24) ct('A: RETRY', 92, P.w, 5);
+        ct('B: MENU', 100, P.m, 4);
+      }
+      if (ms.win) {
+        fr(20, 46, 120, 56, P.d); fr(20, 46, 120, 1, '#60c060'); fr(20, 101, 120, 1, '#60c060');
+        fr(20, 46, 1, 56, '#60c060'); fr(139, 46, 1, 56, '#60c060');
+        ct('CLEARED!', 60, '#60c060', 8);
+        ct('TIME:' + ms.secs + 's', 74, P.w, 5);
+        const b = ms.bests[ms.lv.id];
+        if (b) ct('BEST:' + b + 's', 84, '#60c060', 4);
+        if (tick % 40 < 24) ct('A: RETRY', 92, P.w, 5);
+        ct('B: MENU', 100, P.m, 4);
+      }
       scanlines(); if (paused) drawPauseMenu();
     }
 
